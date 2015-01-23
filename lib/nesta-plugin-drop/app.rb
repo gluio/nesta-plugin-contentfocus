@@ -1,5 +1,5 @@
 require "nesta-plugin-drop/client"
-require "nesta-plugin-drop/Helpers"
+require "nesta-plugin-drop/helpers"
 require "nesta-plugin-drop/routes"
 module Nesta
   class App
