@@ -1,7 +1,7 @@
 module Nesta
   module Plugin
     module Drop
-      class Routes
+      module Routes
         def included(app)
           app.post "/nestadrop" do
             if !nestadrop_request?
