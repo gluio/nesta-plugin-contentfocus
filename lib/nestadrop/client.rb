@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'rest_client'
+require 'yajl'
 module Nesta
   module Plugin
     module Drop
