@@ -1,5 +1,2 @@
 require "nestadrop/version"
-
-module Nestadrop
-  # Your code goes here...
-end
+Nesta::Plugin.register(__FILE__)
