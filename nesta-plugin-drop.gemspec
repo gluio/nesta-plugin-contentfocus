@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'nestadrop/version'
+require 'nesta-plugin-drop/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "nestadrop"
-  spec.version       = Nestadrop::VERSION
+  spec.version       = Nesta::Plugin::Drop::VERSION
   spec.authors       = ["Glenn Gillen"]
   spec.email         = ["me@glenngillen.com"]
   spec.summary       = %q{NestaCMS and Dropbox integration.}
