@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nesta-plugin-drop/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "nestadrop"
+  spec.name          = "nesta-plugin-drop"
   spec.version       = Nesta::Plugin::Drop::VERSION
   spec.authors       = ["Glenn Gillen"]
   spec.email         = ["me@glenngillen.com"]
