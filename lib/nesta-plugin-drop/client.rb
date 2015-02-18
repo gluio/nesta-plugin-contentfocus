@@ -5,12 +5,12 @@ module Nesta
   module Plugin
     module Drop
       class Client
-        def self.host(key = nil)
-          if key
-            "https://#{key}:@api.nestadrop.io"
-          else
-            "https://api.nestadrop.io"
-          end
+        def self.host
+          ENV["NESTADROP_URL"]
+        end
+
+        def self.userinfo
+          URI.parse(host).userinfo
         end
 
         def self.confirm_linked!
@@ -32,7 +32,7 @@ module Nesta
         end
 
         def self.files
-          files = RestClient.get "#{host(ENV["NDROP_KEY"])}/files", {
+          files = RestClient.get "#{host}/files", {
             accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
           Yajl::Parser.parse files
         rescue RestClient::Unauthorized
@@ -45,7 +45,7 @@ module Nesta
           puts "Caching: #{local_path}"
           FileUtils.mkdir_p(File.dirname(local_path))
           file_contents = open("#{host}/file?file=#{URI.encode(file)}",
-            http_basic_authentication: [ENV["NDROP_KEY"], ""]).read
+            http_basic_authentication: userinfo).read
           File.open(local_path, 'w') do |fo|
             fo.write file_contents
           end
