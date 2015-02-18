@@ -32,7 +32,8 @@ module Nesta
         end
 
         def self.files
-          files = RestClient.get "#{host(ENV["NDROP_KEY"])}/files", { accept: :json }
+          files = RestClient.get "#{host(ENV["NDROP_KEY"])}/files", {
+            accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
           Yajl::Parser.parse files
         rescue RestClient::Unauthorized
           return []
