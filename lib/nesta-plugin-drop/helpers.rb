@@ -7,7 +7,7 @@ module Nesta
         end
 
         def setup_nestadrop
-          redirect to("#{Nesta::Plugin::Drop::Client.host}/?domain=#{request.host}&key=#{ENV["NDROP_KEY"]}")
+          redirect to("#{Nesta::Plugin::Drop::Client.host}/?domain=#{request.host}")
         end
 
         def check_nestadrop
@@ -16,7 +16,13 @@ module Nesta
         end
 
         def nestadrop_request?
-          params["KEY"] == ENV["NDROP_KEY"]
+          expected_user, expected_pass = Client.userinfo
+          auth = Rack::Auth::Basic::Request.new(request.env)
+          if auth.provided? && auth.basic? && auth.credentials == [expected_user, expected_pass]
+            return true
+          else
+            return false
+          end
         end
       end
     end
