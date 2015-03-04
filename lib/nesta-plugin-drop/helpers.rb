@@ -7,7 +7,7 @@ module Nesta
         end
 
         def setup_nestadrop
-          redirect to("#{Nesta::Plugin::Drop::Client.host}?domain=#{request.host}")
+          redirect to("#{Nesta::Plugin::Drop::Client.host}account/setup/?domain=#{request.host}")
         end
 
         def check_nestadrop
