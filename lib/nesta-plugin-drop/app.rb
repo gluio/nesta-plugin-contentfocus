@@ -10,7 +10,6 @@ module Nesta
     end
 
     error do
-      Bugsnag.auto_notify($!)
       set_common_variables
       haml(:error)
     end
