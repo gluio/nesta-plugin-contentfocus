@@ -13,16 +13,22 @@ module Nesta
           URI.parse(host).userinfo
         end
 
-        def self.confirm_linked!
-          return true if File.exists?("/tmp/.nestadropped")
+        def self.confirm_synced!
+          return true if nestadrop_synced?
           File.open("/tmp/.nestadropped", "w+") do |f|
-            f.write "linked"
+            f.write "synced"
           end
         end
 
+        def nestadrop_synced?
+          File.exists?("/tmp/.nestadropped")
+        end
+
         def self.nestadrop_configured?
-          return true if File.exists?("/tmp/.nestadropped")
-          false
+          return true if nestadrop_synced?
+          account = RestClient.get "#{host}account", {
+            accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
+          account["uid"] && account["token"] && acount["domain"]
         end
 
         def self.bounce_server!
@@ -40,7 +46,7 @@ module Nesta
         end
 
         def self.cache_file(file)
-          confirm_linked!
+          confirm_synced!
           local_path = [Nesta::App.root, file].join("/")
           puts "Caching: #{local_path}"
           FileUtils.mkdir_p(File.dirname(local_path))
