@@ -28,7 +28,7 @@ module Nesta
           return true if nestadrop_synced?
           account = RestClient.get "#{host}account", {
             accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
-          account["uid"] && account["token"] && acount["domain"]
+          account["uid"] && account["token"] && account["domain"]
         end
 
         def self.bounce_server!
