@@ -20,7 +20,7 @@ module Nesta
           end
         end
 
-        def nestadrop_synced?
+        def self.nestadrop_synced?
           File.exists?("/tmp/.nestadropped")
         end
 
