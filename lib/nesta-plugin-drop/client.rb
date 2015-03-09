@@ -10,7 +10,7 @@ module Nesta
         end
 
         def self.userinfo
-          URI.parse(host).userinfo
+          URI.parse(host).userinfo.split(":")
         end
 
         def self.confirm_synced!
@@ -51,14 +51,11 @@ module Nesta
           local_path = [Nesta::App.root, file].join("/")
           puts "Caching: #{local_path}"
           FileUtils.mkdir_p(File.dirname(local_path))
-          file_contents = open("#{host}file?file=#{URI.encode(file)}",
-            http_basic_authentication: userinfo).read
+          file_contents = RestClient.get "#{host}file?file=#{URI.encode(file)}"
           File.open(local_path, 'w') do |fo|
             fo.write file_contents
           end
           bounce_server!
-        rescue OpenURI::HTTPError => ex
-          puts ex
         rescue RuntimeError => ex
           puts ex
         end
@@ -86,7 +83,7 @@ module Nesta
         end
 
         def self.bootstrap!
-          unless nestadrop_configured?
+          unless nestadrop_synced?
             cache_files
           end
         end
