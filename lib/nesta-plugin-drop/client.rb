@@ -26,8 +26,9 @@ module Nesta
 
         def self.nestadrop_configured?
           return true if nestadrop_synced?
-          account = RestClient.get "#{host}account", {
+          json = RestClient.get "#{host}account", {
             accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
+          account = Yajl::Parser.parse json
           account["uid"] && account["token"] && account["domain"]
         end
 
