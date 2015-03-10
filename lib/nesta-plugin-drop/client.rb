@@ -13,10 +13,20 @@ module Nesta
           URI.parse(host).userinfo.split(":")
         end
 
+        def self.lock
+          @lock ||= Mutex.new
+        end
+
         def self.confirm_synced!
           return true if nestadrop_synced?
           File.open("/tmp/.nestadropped", "w+") do |f|
             f.write "synced"
+          end
+        end
+
+        def self.syncing?
+          lock.synchronize do
+            @syncing
           end
         end
 
@@ -33,17 +43,31 @@ module Nesta
         end
 
         def self.bounce_server!
+          return if syncing?
           puts "Restarting server..."
           ppid = Process.ppid
           Process.kill("HUP", ppid)
         end
 
         def self.files
-          files = RestClient.get "#{host}files", {
-            accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
-          Yajl::Parser.parse files
+          lock.synchronize do
+            @files ||= Yajl::Parser.parse(RestClient.get "#{host}files", {
+              accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION })
+          end
+          @files
         rescue RestClient::Unauthorized
           return []
+        end
+
+        def self.uncached_files
+          @uncached_files
+        end
+
+        def self.uncached_files=(val)
+          lock.synchronize do
+            @uncached_files ||= val
+          end
+          @uncached_files
         end
 
         def self.cache_file(file)
@@ -62,18 +86,18 @@ module Nesta
 
         def self.cache_files
           threads = []
-          filenames = Client.files
-          return unless filenames.size > 0
-          slice_size = filenames.size/3
-          puts "Slice size is: #{slice_size}"
-          filenames.each_slice(slice_size).each do |slice|
+          self.uncached_files = Client.files
+          return unless uncached_files.size > 0
+          5.times do
             threads << Thread.new do
-              slice.each do |file, status|
-                cache_file(file)
+              lock.synchronize do
+                file = self.uncached_files.pop
               end
+              cache_file(file) if file
             end
           end
           threads.each(&:join)
+          bounce_server!
         end
 
         def self.remove_file(file)
