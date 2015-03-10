@@ -90,6 +90,7 @@ module Nesta
           return unless uncached_files.size > 0
           5.times do
             threads << Thread.new do
+              file = nil
               lock.synchronize do
                 file = self.uncached_files.pop
               end
