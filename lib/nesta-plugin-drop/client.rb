@@ -85,9 +85,10 @@ module Nesta
         end
 
         def self.cache_files
-          threads = []
           self.uncached_files = Client.files
           return unless uncached_files.size > 0
+          @syncing = true
+          threads = []
           5.times do
             threads << Thread.new do
               file = nil
@@ -98,6 +99,7 @@ module Nesta
             end
           end
           threads.each(&:join)
+          @syncing = false
           bounce_server!
         end
 
