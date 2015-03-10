@@ -44,16 +44,8 @@ module Nesta
 
         def self.bounce_server!
           return if syncing?
-          pid = Process.ppid
-          begin
-            puts "Restarting server..."
-            Process.kill("USR2", pid)
-          rescue Errno::EPERM
-            raise if @retried
-            @retried = true
-            pid = Process.pid
-            retry
-          end
+          puts "Restarting server..."
+          system("bundle exec pumactl -S /app/state phased-restart")
         end
 
         def self.files
