@@ -45,8 +45,8 @@ module Nesta
         def self.bounce_server!
           return if syncing?
           puts "Restarting server..."
-          ppid = Process.ppid
-          Process.kill("HUP", ppid)
+          pid = Process.ppid
+          Process.kill("USR2", pid)
         end
 
         def self.files
