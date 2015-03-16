@@ -45,7 +45,7 @@ module Nesta
         def self.bounce_server!
           return if syncing?
           puts "Restarting server..."
-          system("bundle exec pumactl -S /app/state phased-restart")
+          system("bundle exec pumactl -S /tmp/.app_state phased-restart")
         end
 
         def self.files
