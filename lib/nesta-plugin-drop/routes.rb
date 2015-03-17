@@ -2,7 +2,7 @@ module Nesta
   module Plugin
     module Drop
       module Routes
-        def included(app)
+        def self.included(app)
           app.post "/nestadrop" do
             if !nestadrop_request?
               status 404
