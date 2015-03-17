@@ -48,7 +48,12 @@ module Nesta
         def self.bounce_server!
           return if syncing?
           Nesta::Plugin::Drop.logger.info "NESTADROP: Restarting server..."
-          system("bundle exec pumactl -S /tmp/.app_state phased-restart")
+          unless system("bundle exec pumactl -S /tmp/.app_state phased-restart")
+            # App hasn't finished loading, we can just clear the Nesta cache
+            # because we've not yet forked worker threads for the web server
+            Nesta::Plugin::Drop.logger.info "NESTADROP: Purging nesta file cache."
+            Nesta::FileModel.purge_cache
+          end
         end
 
         def self.files
