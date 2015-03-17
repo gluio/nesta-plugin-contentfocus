@@ -105,10 +105,12 @@ module Nesta
             threads << Thread.new do
              Nesta::Plugin::Drop.logger.debug "NESTADROP: Creating worker thread to cache files..."
               file = nil
-              lock.synchronize do
-                file = self.uncached_files.pop
+              while self.uncached_files.size > 0
+                lock.synchronize do
+                  file = self.uncached_files.pop
+                end
+                cache_file(file) if file
               end
-              cache_file(file) if file
             end
             Nesta::Plugin::Drop.logger.debug "NESTADROP: Worker thread complete."
           end
