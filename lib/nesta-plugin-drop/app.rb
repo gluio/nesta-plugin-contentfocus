@@ -1,3 +1,4 @@
+require "redcarpet"
 require "nesta-plugin-drop/client"
 require "nesta-plugin-drop/helpers"
 require "nesta-plugin-drop/routes"
