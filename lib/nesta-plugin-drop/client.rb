@@ -129,7 +129,9 @@ module Nesta
         def self.bootstrap!
           Nesta::Plugin::Drop.logger.debug "NESTADROP: Bootstrapping local instance..."
           unless nestadrop_synced?
-            cache_files
+            Thread.new do
+              cache_files
+            end
           end
         end
       end
