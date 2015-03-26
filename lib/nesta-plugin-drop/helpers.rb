@@ -1,4 +1,3 @@
-require 'redcarpet'
 require 'nesta-plugin-drop/logger'
 module Nesta
   module Plugin
