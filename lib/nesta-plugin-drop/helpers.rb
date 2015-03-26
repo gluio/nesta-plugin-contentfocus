@@ -29,12 +29,6 @@ module Nesta
             return false
           end
         end
-
-        def haml(template, options = {}, locals = {})
-          defaults, engine = Overrides.render_options(template, :haml)
-          defaults.merge!(fenced_code_blocks: true)
-          super(template, defaults.merge(options), locals)
-        end
       end
     end
   end

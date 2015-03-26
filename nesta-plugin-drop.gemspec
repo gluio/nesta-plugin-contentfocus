@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_runtime_dependency 'nesta', '>= 0.11.0'
   spec.add_runtime_dependency 'redcarpet', '~> 3.2.2'
-  spec.add_runtime_dependency 'tilt', '~> 1.4.0'
+  spec.add_runtime_dependency 'tilt', '2.0.0'
   spec.add_runtime_dependency 'rest-client'
   spec.add_runtime_dependency 'yajl-ruby'
 end
