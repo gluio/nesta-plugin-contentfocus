@@ -1,4 +1,3 @@
-require 'fileutils'
 require 'rest_client'
 require 'yajl'
 require 'nesta-plugin-drop/logger'
