@@ -1,3 +1,4 @@
+require 'redcarpet'
 require 'nesta-plugin-drop/logger'
 module Nesta
   module Plugin
@@ -28,6 +29,12 @@ module Nesta
             Nesta::Plugin::Drop.logger.debug "NESTADROP: Authentication failed."
             return false
           end
+        end
+
+        def haml(template, options = {}, locals = {})
+          defaults, engine = Overrides.render_options(template, :haml)
+          defaults.merge!(fenced_code_blocks: true)
+          super(template, defaults.merge(options), locals)
         end
       end
     end
