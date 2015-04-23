@@ -11,12 +11,12 @@ module Nesta
     end
 
     not_found do
-      set_common_variables
       if Nesta::Plugin::Drop::Client.syncing?
         filename = File.expand_path("assets/loading.html", File.dirname(__FILE__))
         template = File.read(filename)
         return template
       else
+        set_common_variables
         haml(:not_found)
       end
     end
