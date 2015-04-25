@@ -29,6 +29,10 @@ module Nesta
             return false
           end
         end
+
+        def site_domain
+          request.host
+        end
       end
     end
   end
