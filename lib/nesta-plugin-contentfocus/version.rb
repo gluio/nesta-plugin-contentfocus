@@ -1,6 +1,6 @@
 module Nesta
   module Plugin
-    module Drop
+    module ContentFocus
       VERSION = "0.0.15"
     end
   end

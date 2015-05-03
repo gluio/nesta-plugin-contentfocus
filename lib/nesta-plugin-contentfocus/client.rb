@@ -1,12 +1,12 @@
 require 'rest_client'
 require 'yajl'
-require 'nesta-plugin-drop/logger'
+require 'nesta-plugin-contentfocus/logger'
 module Nesta
   module Plugin
-    module Drop
+    module ContentFocus
       class Client
         def self.host
-          ENV["NESTADROP_URL"]
+          ENV["CONTENTFOCUS_URL"]
         end
 
         def self.userinfo
@@ -18,9 +18,9 @@ module Nesta
         end
 
         def self.confirm_synced!
-          return true if nestadrop_synced?
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Syncing with Dropbox filesystem."
-          File.open("/tmp/.nestadropped", "w+") do |f|
+          return true if contentfocus_synced?
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Syncing with Dropbox filesystem."
+          File.open("/tmp/.contentfocus", "w+") do |f|
             f.write "synced"
           end
         end
@@ -31,27 +31,27 @@ module Nesta
           end
         end
 
-        def self.nestadrop_synced?
-          File.exists?("/tmp/.nestadropped")
+        def self.contentfocus_synced?
+          File.exists?("/tmp/.contentfocus")
         end
 
-        def self.nestadrop_configured?
-          return true if nestadrop_synced?
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Checking if account is linked to Dropbox."
+        def self.contentfocus_configured?
+          return true if contentfocus_synced?
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Checking if account is linked to Dropbox."
           json = RestClient.get "#{host}account", {
-            accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION }
+            accept: :json, x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
           account = Yajl::Parser.parse json
           account["uid"] && account["token"] && account["domain"]
         end
 
         def self.bounce_server!
           return if syncing?
-          Nesta::Plugin::Drop.logger.info "NESTADROP: Purging nesta file cache."
+          Nesta::Plugin::ContentFocus.logger.info "CONTENTFOCUS: Purging nesta file cache."
           Nesta::FileModel.purge_cache
-          Nesta::Plugin::Drop.logger.info "NESTADROP: Restarting server..."
+          Nesta::Plugin::ContentFocus.logger.info "CONTENTFOCUS: Restarting server..."
           unless system("bundle exec pumactl -S /tmp/.app_state phased-restart")
             Thread.new do
-              Nesta::Plugin::Drop.logger.info "NESTADROP: Waiting for server to load before restarting."
+              Nesta::Plugin::ContentFocus.logger.info "CONTENTFOCUS: Waiting for server to load before restarting."
               sleep(3)
               bounce_server!
             end
@@ -60,9 +60,9 @@ module Nesta
 
         def self.files
           lock.synchronize do
-            Nesta::Plugin::Drop.logger.debug "NESTADROP: Retrieving file list..."
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Retrieving file list..."
             @files ||= Yajl::Parser.parse(RestClient.get "#{host}files", {
-              accept: :json, x_nestadrop_version: Nesta::Plugin::Drop::VERSION })
+              accept: :json, x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION })
           end
           @files
         rescue RestClient::Unauthorized
@@ -83,13 +83,13 @@ module Nesta
         def self.cache_file(file)
           confirm_synced!
           local_path = [Nesta::App.root, file].join("/")
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Caching '#{file}' to local filesystem at '#{local_path}'..."
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Caching '#{file}' to local filesystem at '#{local_path}'..."
           FileUtils.mkdir_p(File.dirname(local_path))
           file_contents = RestClient.get "#{host}file?file=#{URI.encode(file)}"
           File.open(local_path, 'w') do |fo|
             fo.write file_contents
           end
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Cached '#{local_path}'."
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Cached '#{local_path}'."
           bounce_server!
         rescue RuntimeError => ex
           puts ex
@@ -102,7 +102,7 @@ module Nesta
           threads = []
           5.times do
             threads << Thread.new do
-             Nesta::Plugin::Drop.logger.debug "NESTADROP: Creating worker thread to cache files..."
+             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Creating worker thread to cache files..."
               file = nil
               while self.uncached_files.size > 0
                 lock.synchronize do
@@ -111,7 +111,7 @@ module Nesta
                 cache_file(file) if file
               end
             end
-            Nesta::Plugin::Drop.logger.debug "NESTADROP: Worker thread complete."
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Worker thread complete."
           end
           threads.each(&:join)
           @syncing = false
@@ -120,14 +120,14 @@ module Nesta
 
         def self.remove_file(file)
           local_path = [Nesta::App.root, file].join("/")
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Removing locally cached file at '#{local_path}'."
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing locally cached file at '#{local_path}'."
           FileUtils.rm_r(File.dirname(local_path), secure: true)
           bounce_server!
         end
 
         def self.bootstrap!
-          Nesta::Plugin::Drop.logger.debug "NESTADROP: Bootstrapping local instance..."
-          unless nestadrop_synced?
+          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Bootstrapping local instance..."
+          unless contentfocus_synced?
             Thread.new do
               cache_files
             end
