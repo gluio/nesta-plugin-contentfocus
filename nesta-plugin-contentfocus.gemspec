@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nesta-plugin-contentfocus/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "nesta-plugin-drop"
-  spec.version       = Nesta::Plugin::Drop::VERSION
+  spec.name          = "nesta-plugin-focus"
+  spec.version       = Nesta::Plugin::ContentFocus::VERSION
   spec.authors       = ["Glenn Gillen"]
   spec.email         = ["me@glenngillen.com"]
   spec.summary       = %q{NestaCMS and Dropbox integration.}
   spec.description   = %q{Allows you to sync web content on Dropbox with a Ruby-based CMS}
-  spec.homepage      = "https://nestadrop.io/"
+  spec.homepage      = "https://contentfocus.io/"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
