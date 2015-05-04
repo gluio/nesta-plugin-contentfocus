@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nesta-plugin-contentfocus/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "nesta-plugin-focus"
+  spec.name          = "nesta-plugin-contentfocus"
   spec.version       = Nesta::Plugin::ContentFocus::VERSION
   spec.authors       = ["Glenn Gillen"]
   spec.email         = ["me@glenngillen.com"]
