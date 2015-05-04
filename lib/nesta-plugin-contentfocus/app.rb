@@ -21,6 +21,18 @@ module Nesta
       end
     end
 
+    error SocketError do
+      contentfocus_url = Nesta::Plugin::ContentFocus::Client.host
+      if contentfocus_url.nil? || contentfocus_url == ""
+        filename = File.expand_path("assets/install.html", File.dirname(__FILE__))
+        template = File.read(filename)
+        return template
+      else
+        set_common_variables
+        haml(:error)
+      end
+    end
+
     error do
       set_common_variables
       haml(:error)
