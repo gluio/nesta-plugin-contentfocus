@@ -1,6 +1,5 @@
 require 'nesta-plugin-contentfocus/client'
 require 'nesta-plugin-contentfocus/logger'
-require 'nesta-plugin-contentfocus/metrics'
 module Nesta
   module Plugin
     module ContentFocus
