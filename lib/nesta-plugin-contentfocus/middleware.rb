@@ -5,6 +5,10 @@ module Nesta
     module ContentFocus
       class Middleware
 
+        def initialize(app, options={})
+          @app = app
+        end
+
         def javascript
           return nil unless Client.installed?
           %Q{<script src="//cdn.contentfocus.io/#{Client.username}.js"></script>}
