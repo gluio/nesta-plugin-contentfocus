@@ -15,7 +15,7 @@ module Nesta
 
         def self.get(path, headers = {})
           defaults = { x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
-          RestClient.get URI.join(host, path), defaults.merge(headers)
+          RestClient.get URI.join(host, path).to_s, defaults.merge(headers)
         end
 
         def self.get_json(path)
