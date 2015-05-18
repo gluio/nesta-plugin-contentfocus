@@ -11,7 +11,7 @@ module Nesta
 
         def javascript
           return nil unless Client.installed?
-          %Q{<script src="//cdn.contentfocus.io/#{Client.username}.js"></script>}
+          %Q{<script src="//cdn.contentfocus.io/#{Client.username}.js" async></script>}
         end
 
         def call(env)
