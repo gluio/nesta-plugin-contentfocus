@@ -13,8 +13,22 @@ module Nesta
           URI.parse(host).userinfo.split(":")
         end
 
+        def self.get(path, headers = {})
+          defaults = { x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
+          RestClient.get URI.join(host, path), defaults.merge(headers)
+        end
+
+        def self.get_json(path)
+          json = get(path, accept: :json)
+          Yajl::Parser.parse json
+        end
+
         def self.lock
           @lock ||= Mutex.new
+        end
+
+        def self.installed?
+          !host.nil? && contentfocus_url != ""
         end
 
         def self.confirm_synced!
@@ -38,9 +52,7 @@ module Nesta
         def self.contentfocus_configured?
           return true if contentfocus_synced?
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Checking if account is linked to Dropbox."
-          json = RestClient.get "#{host}account", {
-            accept: :json, x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
-          account = Yajl::Parser.parse json
+          account = get_json("account")
           account["uid"] && account["token"] && account["domain"]
         end
 
@@ -61,8 +73,7 @@ module Nesta
         def self.files
           lock.synchronize do
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Retrieving file list..."
-            @files ||= Yajl::Parser.parse(RestClient.get "#{host}files", {
-              accept: :json, x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION })
+            @files ||= get_json("files")
           end
           @files
         rescue RestClient::Unauthorized
@@ -85,7 +96,7 @@ module Nesta
           local_path = [Nesta::App.root, file].join("/")
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Caching '#{file}' to local filesystem at '#{local_path}'..."
           FileUtils.mkdir_p(File.dirname(local_path))
-          file_contents = RestClient.get "#{host}file?file=#{URI.encode(file)}"
+          file_contents = get("file?file=#{URI.encode(file)}")
           File.open(local_path, 'w') do |fo|
             fo.write file_contents
           end
