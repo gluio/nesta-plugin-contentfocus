@@ -8,6 +8,9 @@ module Nesta
           if Client.installed?
             set(get)
           end
+        rescue Exception => ex
+          Nesta::Plugin::ContentFocus.logger.error "CONTENTFOCUS: Error setting config."
+          Nesta::Plugin::ContentFocus.logger.error ex.to_s
         end
 
         def self.get
