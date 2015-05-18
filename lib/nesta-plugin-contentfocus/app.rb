@@ -1,11 +1,14 @@
 require "redcarpet"
 require "nesta-plugin-contentfocus/client"
 require "nesta-plugin-contentfocus/helpers"
+require "nesta-plugin-contentfocus/middleware"
 require "nesta-plugin-contentfocus/routes"
 module Nesta
   class App
     include Nesta::Plugin::ContentFocus::Routes
     helpers Nesta::Plugin::ContentFocus::Helpers
+    use Nesta::Plugin::ContentFocus::Middleware
+
     before do
       check_contentfocus
     end

@@ -13,6 +13,10 @@ module Nesta
           URI.parse(host).userinfo.split(":")
         end
 
+        def self.username
+          userinfo.first
+        end
+
         def self.get(path, headers = {})
           defaults = { x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
           RestClient.get URI.join(host, path).to_s, defaults.merge(headers)
