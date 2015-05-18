@@ -28,7 +28,7 @@ module Nesta
         end
 
         def self.installed?
-          !host.nil? && contentfocus_url != ""
+          !host.nil? && host != ""
         end
 
         def self.confirm_synced!
