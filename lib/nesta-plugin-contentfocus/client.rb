@@ -73,7 +73,7 @@ module Nesta
         def self.update_channel
           return unless update_channel_url && update_channel_url != ""
           return @update_channel if @update_channel
-          @update_channel = PusherClient::Socket.new
+          @update_channel = PusherClient::Socket.new(URI.parse(update_channel_url).userinfo.split(":").first)
           @update_channel.connect(true)
           @update_channel
         end
