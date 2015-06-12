@@ -97,7 +97,8 @@ module Nesta
           app_key, channel_secret = URI.parse(update_channel_url).userinfo.split(":")
           pusher_opts = {
             encrypted: true,
-            auth_method: method(:update_channel_auth)
+            auth_method: method(:update_channel_auth),
+            logger: Nesta::Plugin::ContentFocus.logger
           }
           @update_channel = PusherClient::Socket.new(app_key, pusher_opts)
           @update_channel
