@@ -81,16 +81,17 @@ module Nesta
         def self.subscribe_to_updates
           if update_channel
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Subscribing to update channel"
-            update_channel.subscribe(URI.parse(update_channel_url).path.sub(%r{\A/},""))
-            update_channel.bind('file-added') do |data|
+            channel_name = URI.parse(update_channel_url).path.sub(%r{\A/},"")
+            update_channel.subscribe(channel_name)
+            update_channel[channel_name].bind('file-added') do |data|
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received"
               cache_file(data["file"])
             end
-            update_channel.bind('file-removed') do |data|
+            update_channel[channel_name].bind('file-removed') do |data|
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file remove received"
               remove_file(data["file"])
             end
-            update_channel.bind('config-changed') do |data|
+            update_channel[channel_name].bind('config-changed') do |data|
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming config update received"
               Thread.new do
                 sleep(rand(0.0 ... 3.0))
