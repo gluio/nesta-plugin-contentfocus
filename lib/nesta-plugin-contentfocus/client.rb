@@ -1,8 +1,8 @@
 require 'uri'
-require 'websocket-native'
 require 'pusher-client'
 require 'rest_client'
 require 'yajl'
+require 'websocket-native'
 require 'nesta-plugin-contentfocus/logger'
 module Nesta
   module Plugin
