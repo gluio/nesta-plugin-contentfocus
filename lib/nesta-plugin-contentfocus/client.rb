@@ -88,7 +88,10 @@ module Nesta
               remove_file(data["filename"])
             end
             update_channel.bind('config-changed') do |data|
-              bounce_server!
+              Thread.new do
+                sleep(rand(0.0 ... 3.0))
+                bounce_server!
+              end
             end
           end
         end
