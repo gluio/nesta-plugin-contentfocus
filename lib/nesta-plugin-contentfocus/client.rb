@@ -82,10 +82,10 @@ module Nesta
           if update_channel
             update_channel.subscribe(URI.parse(update_channel_url).path.sub(%r{\A/},""))
             update_channel.bind('file-added') do |data|
-              cache_file(data["filename"])
+              cache_file(data["file"])
             end
             update_channel.bind('file-removed') do |data|
-              remove_file(data["filename"])
+              remove_file(data["file"])
             end
             update_channel.bind('config-changed') do |data|
               Thread.new do
