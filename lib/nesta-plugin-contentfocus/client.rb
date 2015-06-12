@@ -35,7 +35,7 @@ module Nesta
           if opts[:encrypt] && params
             raise "No shared secret to encrypt with" unless password
             params.each do |k, v|
-              params[k] = Base64.encode(Encryptor.encrypt(value: v, key: password)).encode("UTF-8")
+              params[k] = Base64.encode64(Encryptor.encrypt(value: v, key: password)).encode("UTF-8")
             end
           end
           json = get(path, params: params, accept: :json)
