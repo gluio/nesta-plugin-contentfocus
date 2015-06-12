@@ -19,7 +19,7 @@ module Nesta
 
         def self.get
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Fetching app configuration settings"
-          Client.get_json("config", { exclude: excluded_config }, encrypt: true)
+          Client.get_json("config", { exclude: excluded_config.join(",") }, encrypt: true)
         end
 
         def self.set(hash)
