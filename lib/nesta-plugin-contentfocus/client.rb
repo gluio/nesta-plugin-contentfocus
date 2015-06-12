@@ -1,3 +1,4 @@
+require 'base64'
 require 'uri'
 require 'encryptor'
 require 'pusher-client'
@@ -34,7 +35,7 @@ module Nesta
           if opts[:encrypt] && params
             raise "No shared secret to encrypt with" unless password
             params.each do |k, v|
-              params[k] = Encryptor.encrypt(value: v, key: password)
+              params[k] = Base64.encode(Encryptor.encrypt(value: v, key: password)).encode("UTF-8")
             end
           end
           json = get(path, params: params, accept: :json)
