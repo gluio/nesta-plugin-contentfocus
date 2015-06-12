@@ -1,3 +1,6 @@
+require 'uri'
+require 'websocket-native'
+require 'pusher-client'
 require 'rest_client'
 require 'yajl'
 require 'nesta-plugin-contentfocus/logger'
@@ -57,7 +60,34 @@ module Nesta
           return true if contentfocus_synced?
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Checking if account is linked to Dropbox."
           account = get_json("account")
+          @update_channel_url = account["update_channel"]
           account["uid"] && account["token"] && account["domain"]
+        end
+
+        def self.update_channel_url
+          return @update_channel_url if @update_channel_url
+          account = get_json("account")
+          @update_channel_url = account["update_channel"]
+        end
+
+        def self.update_channel
+          return unless update_channel_url && update_channel_url != ""
+          return @update_channel if @update_channel
+          @update_channel = PusherClient::Socket.new
+          @update_channel.connect(true)
+          @update_channel
+        end
+
+        def self.subscribe_to_updates
+          if update_channel
+            update_channel.subscribe(URI.parse(update_channel_url).path.sub(%r{\A/},""))
+            update_channel.bind('file-added') do |data|
+            end
+            update_channel.bind('file-removed') do |data|
+            end
+            update_channel.bind('config-changed') do |data|
+            end
+          end
         end
 
         def self.bounce_server!
