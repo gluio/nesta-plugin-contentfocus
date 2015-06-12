@@ -64,6 +64,10 @@ module Nesta
           account["uid"] && account["token"] && account["domain"]
         end
 
+        def self.update_channel?
+          update_channel_url && update_channel_url != ""
+        end
+
         def self.update_channel_url
           return @update_channel_url if @update_channel_url
           account = get_json("account")
@@ -71,10 +75,10 @@ module Nesta
         end
 
         def self.update_channel
-          return unless update_channel_url && update_channel_url != ""
+          return unless update_channel?
           return @update_channel if @update_channel
-          @update_channel = PusherClient::Socket.new(URI.parse(update_channel_url).userinfo.split(":").first)
-          @update_channel.connect(true)
+          channel_key, channel_secret = URI.parse(update_channel_url).userinfo.split(":")
+          @update_channel = PusherClient::Socket.new(channel_key, { encrypted: true })
           @update_channel
         end
 
@@ -82,6 +86,7 @@ module Nesta
           if update_channel
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Subscribing to update channel"
             channel_name = URI.parse(update_channel_url).path.sub(%r{\A/},"")
+            user = ENV["DYNO"] || `hostname`
             update_channel.subscribe(channel_name)
             update_channel[channel_name].bind('file-added') do |data|
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received"
@@ -98,6 +103,7 @@ module Nesta
                 bounce_server!
               end
             end
+            update_channel.connect(true)
           end
         end
 
