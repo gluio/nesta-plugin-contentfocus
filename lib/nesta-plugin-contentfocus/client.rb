@@ -6,6 +6,7 @@ require 'rest_client'
 require 'yajl'
 require 'websocket-native'
 require 'nesta-plugin-contentfocus/logger'
+PusherClient.logger = Nesta::Plugin::ContentFocus.logger
 module Nesta
   module Plugin
     module ContentFocus
