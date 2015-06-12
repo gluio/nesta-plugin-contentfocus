@@ -60,14 +60,14 @@ module Nesta
           return true if contentfocus_synced?
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Checking if account is linked to Dropbox."
           account = get_json("account")
-          @update_channel_url = account["update_channel"]
+          @update_channel_url = (account["update_channel"] || "")
           account["uid"] && account["token"] && account["domain"]
         end
 
         def self.update_channel_url
           return @update_channel_url if @update_channel_url
           account = get_json("account")
-          @update_channel_url = account["update_channel"]
+          @update_channel_url = (account["update_channel"] || "")
         end
 
         def self.update_channel
