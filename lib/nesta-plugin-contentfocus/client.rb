@@ -1,4 +1,5 @@
 require 'uri'
+require 'encryptor'
 require 'pusher-client'
 require 'rest_client'
 require 'yajl'
@@ -20,12 +21,22 @@ module Nesta
           userinfo.first
         end
 
+        def self.password
+          userinfo.last
+        end
+
         def self.get(path, headers = {})
           defaults = { x_contentfocus_version: Nesta::Plugin::ContentFocus::VERSION }
           RestClient.get URI.join(host, path).to_s, defaults.merge(headers)
         end
 
-        def self.get_json(path, params = {})
+        def self.get_json(path, params = {}, opts = {})
+          if opts[:encrypt] && params
+            raise "No shared secret to encrypt with" unless password
+            params.each do |k, v|
+              params[k] = Encryptor.encrypt(value: v, key: password)
+            end
+          end
           json = get(path, params: params, accept: :json)
           Yajl::Parser.parse json
         end

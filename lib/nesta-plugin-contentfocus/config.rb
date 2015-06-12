@@ -4,6 +4,10 @@ module Nesta
   module Plugin
     module ContentFocus
       class Config
+        def self.excluded_config
+          @excluded_config ||= ENV.keys.sort
+        end
+
         def self.setup!
           if Client.installed?
             set(get)
@@ -15,13 +19,14 @@ module Nesta
 
         def self.get
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Fetching app configuration settings"
-          Client.get_json("config")
+          Client.get_json("config", { exclude: excluded_config }, encrypt: true)
         end
 
         def self.set(hash)
+          hash.reject!{|k,v| excluded_config.include? k }
           hash.each do |k,v|
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Setting configuration setting for #{k}"
-            ENV[k] ||= v
+            ENV[k] = v
           end
         end
       end
