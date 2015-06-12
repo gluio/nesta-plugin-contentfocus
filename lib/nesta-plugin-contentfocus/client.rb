@@ -25,8 +25,8 @@ module Nesta
           RestClient.get URI.join(host, path).to_s, defaults.merge(headers)
         end
 
-        def self.get_json(path)
-          json = get(path, accept: :json)
+        def self.get_json(path, params = {})
+          json = get(path, params: params, accept: :json)
           Yajl::Parser.parse json
         end
 
@@ -72,6 +72,12 @@ module Nesta
           return @update_channel_url if @update_channel_url
           account = get_json("account")
           @update_channel_url = (account["update_channel"] || "")
+        end
+
+        def self.update_channel_auth(socket_id, channel)
+          return unless update_channel?
+          response = get_json("account/channel", socket_id: socket_id)
+          response["auth"]
         end
 
         def self.update_channel
