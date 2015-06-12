@@ -78,7 +78,7 @@ module Nesta
           return unless update_channel?
           return @update_channel if @update_channel
           app_key, channel_secret = URI.parse(update_channel_url).userinfo.split(":")
-          @update_channel = PusherClient::Socket.new(channel_key, { encrypted: true })
+          @update_channel = PusherClient::Socket.new(app_key, { encrypted: true })
           @update_channel
         end
 
