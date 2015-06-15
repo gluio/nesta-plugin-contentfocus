@@ -176,7 +176,7 @@ module Nesta
 
         def self.cache_file(filename)
           confirm_synced!
-          local_filename = local_path(file)
+          local_filename = local_path(filename)
           if within_content_path?(local_filename)
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Caching '#{filename}' to local filesystem at '#{local_filename}'..."
             FileUtils.mkdir_p(File.dirname(local_filename))
