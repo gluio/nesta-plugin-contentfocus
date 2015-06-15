@@ -166,17 +166,29 @@ module Nesta
           @uncached_files
         end
 
-        def self.cache_file(file)
+        def self.local_path(file)
+          File.expand_path(Nesta::Config.content_path(file))
+        end
+
+        def self.within_content_path?(file)
+          file =~ %r{\A#{File.expand_path(Nesta::Config.content_path)}}
+        end
+
+        def self.cache_file(filename)
           confirm_synced!
-          local_path = [Nesta::App.root, file].join("/")
-          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Caching '#{file}' to local filesystem at '#{local_path}'..."
-          FileUtils.mkdir_p(File.dirname(local_path))
-          file_contents = get("file?file=#{URI.encode(file)}")
-          File.open(local_path, 'w') do |fo|
-            fo.write file_contents
+          local_filename = local_path(file)
+          if within_content_path?(local_filename)
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Caching '#{filename}' to local filesystem at '#{local_filename}'..."
+            FileUtils.mkdir_p(File.dirname(local_filename))
+            file_contents = get("file?file=#{URI.encode(filename)}")
+            File.open(local_filename, 'w') do |fo|
+              fo.write file_contents
+            end
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Cached '#{local_filename}'."
+            bounce_server!
+          else
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not cache '#{filename}', resolved path outside allowed directory."
           end
-          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Cached '#{local_path}'."
-          bounce_server!
         rescue RuntimeError => ex
           puts ex
         end
@@ -204,11 +216,20 @@ module Nesta
           bounce_server!
         end
 
-        def self.remove_file(file)
-          local_path = [Nesta::App.root, file].join("/")
-          Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing locally cached file at '#{local_path}'."
-          FileUtils.rm_r(File.dirname(local_path), secure: true)
-          bounce_server!
+        def self.remove_file(filename)
+          local_filename = local_path(filename)
+          if within_content_path?(local_filename)
+            if File.directory?(local_filename)
+              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing '#{filename}' locally cached directory at '#{local_filename}'."
+              FileUtils.rm_r(File.dirname(local_filename), secure: true)
+            else
+              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing '#{filename}' locally cached file at '#{local_filename}'."
+              FileUtils.rm(File.dirname(local_filename), secure: true)
+            end
+            bounce_server!
+          else
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not delete '#{filename}', resolved path outside allowed directory."
+          end
         end
 
         def self.bootstrap!
