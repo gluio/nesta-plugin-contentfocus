@@ -113,15 +113,15 @@ module Nesta
             user = ENV["DYNO"] || `hostname`
             update_channel.subscribe(channel_name)
             update_channel[channel_name].bind('file-added') do |data|
-              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received"
+              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received with data: #{data.inspect}"
               cache_file(data["file"])
             end
             update_channel[channel_name].bind('file-removed') do |data|
-              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file remove received"
+              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file remove received with data: #{data.inspect}"
               remove_file(data["file"])
             end
             update_channel[channel_name].bind('config-changed') do |data|
-              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming config update received"
+              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming config update received with data: #{data.inspect}"
               Thread.new do
                 sleep(rand(0.0 ... 3.0))
                 bounce_server!
