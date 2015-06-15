@@ -112,15 +112,18 @@ module Nesta
             channel_name = URI.parse(update_channel_url).path.sub(%r{\A/},"")
             user = ENV["DYNO"] || `hostname`
             update_channel.subscribe(channel_name)
-            update_channel[channel_name].bind('file-added') do |data|
+            update_channel[channel_name].bind('file-added') do |json|
+              data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received with data: #{data.inspect}"
               cache_file(data["file"])
             end
-            update_channel[channel_name].bind('file-removed') do |data|
+            update_channel[channel_name].bind('file-removed') do |json|
+              data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file remove received with data: #{data.inspect}"
               remove_file(data["file"])
             end
-            update_channel[channel_name].bind('config-changed') do |data|
+            update_channel[channel_name].bind('config-changed') do |json|
+              data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming config update received with data: #{data.inspect}"
               Thread.new do
                 sleep(rand(0.0 ... 3.0))
