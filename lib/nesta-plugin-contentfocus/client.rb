@@ -115,12 +115,12 @@ module Nesta
             update_channel[channel_name].bind('file-added') do |json|
               data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file add received with data: #{data.inspect}"
-              cache_file(data["file"])
+              cache_file(data["file"], false)
             end
             update_channel[channel_name].bind('file-removed') do |json|
               data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming file remove received with data: #{data.inspect}"
-              remove_file(data["file"])
+              remove_file(data["file"], false)
             end
             update_channel[channel_name].bind('config-changed') do |json|
               data = Yajl::Parser.parse json
@@ -137,7 +137,6 @@ module Nesta
         def self.bounce_server!
           return if syncing?
           Nesta::Plugin::ContentFocus.logger.info "CONTENTFOCUS: Purging nesta file cache."
-          Nesta::FileModel.purge_cache
           Nesta::Plugin::ContentFocus.logger.info "CONTENTFOCUS: Restarting server..."
           unless system("bundle exec pumactl -S /tmp/.app_state phased-restart")
             Thread.new do
@@ -177,7 +176,7 @@ module Nesta
           file =~ %r{\A#{File.expand_path(Nesta::Config.content_path)}}
         end
 
-        def self.cache_file(filename)
+        def self.cache_file(filename, bounce_server = true)
           confirm_synced!
           local_filename = local_path(filename)
           if within_content_path?(local_filename)
@@ -188,7 +187,8 @@ module Nesta
               fo.write file_contents
             end
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Cached '#{local_filename}'."
-            bounce_server!
+            Nesta::FileModel.purge_cache
+            bounce_server! if bounce_server
           else
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not cache '#{filename}', resolved path outside allowed directory."
           end
@@ -219,7 +219,7 @@ module Nesta
           bounce_server!
         end
 
-        def self.remove_file(filename)
+        def self.remove_file(filename, bounce_server = false)
           local_filename = local_path(filename)
           if within_content_path?(local_filename)
             if File.directory?(local_filename)
@@ -229,7 +229,8 @@ module Nesta
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing '#{filename}' locally cached file at '#{local_filename}'."
               FileUtils.rm(File.dirname(local_filename))
             end
-            bounce_server!
+            Nesta::FileModel.purge_cache
+            bounce_server! if bounce_server
           else
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not delete '#{filename}', resolved path outside allowed directory."
           end
