@@ -224,7 +224,7 @@ module Nesta
               FileUtils.rm_r(File.dirname(local_filename), secure: true)
             else
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Removing '#{filename}' locally cached file at '#{local_filename}'."
-              FileUtils.rm(File.dirname(local_filename), secure: true)
+              FileUtils.rm(File.dirname(local_filename))
             end
             bounce_server!
           else
