@@ -4,7 +4,7 @@ require "nesta-plugin-contentfocus/helpers"
 require "nesta-plugin-contentfocus/middleware"
 require "nesta-plugin-contentfocus/routes"
 module Nesta
-  class App
+  class App < Sinatra::Base
     include Nesta::Plugin::ContentFocus::Routes
     helpers Nesta::Plugin::ContentFocus::Helpers
     use Nesta::Plugin::ContentFocus::Middleware
