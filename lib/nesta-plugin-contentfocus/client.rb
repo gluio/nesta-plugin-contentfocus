@@ -78,7 +78,7 @@ module Nesta
         end
 
         def self.update_channel?
-          update_channel_url && update_channel_url != ""
+          installed? && update_channel_url && update_channel_url != ""
         end
 
         def self.update_channel_url
