@@ -7,6 +7,10 @@ module Nesta
           Client.contentfocus_configured?
         end
 
+        def contentfocus_installed?
+          Client.installed?
+        end
+
         def setup_contentfocus
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Redirecting to contentfocus.io to complete account setup."
           redirect to("#{Nesta::Plugin::ContentFocus::Client.host}account/setup?domain=#{request.host}")
@@ -14,7 +18,7 @@ module Nesta
 
         def check_contentfocus
           return if request.path_info =~ %r{\A/contentfocus\z}
-          setup_contentfocus unless contentfocus_configured?
+          setup_contentfocus unless !contentfocus_installed? || contentfocus_configured?
         end
 
         def contentfocus_request?
