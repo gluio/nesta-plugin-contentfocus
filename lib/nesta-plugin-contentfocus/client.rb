@@ -15,6 +15,24 @@ module Nesta
           ENV["CONTENTFOCUS_URL"]
         end
 
+        def self.host_with_token_auth(path = nil, query = nil)
+          if host
+            auth_token = get_json("account/login")["token"]
+            query = ["token=#{auth_token}", query].compact.join("&")
+            uri = URI.parse(host)
+            URI::Generic.new(
+              uri.scheme,
+              nil,
+              uri.host,
+              uri.port,
+              uri.registry,
+              [uri.path, path].compact.join("/"),
+              uri.opaque,
+              [uri.query, query].compact.join("&"),
+              nil).to_s
+          end
+        end
+
         def self.userinfo
           URI.parse(host).userinfo.split(":")
         end
