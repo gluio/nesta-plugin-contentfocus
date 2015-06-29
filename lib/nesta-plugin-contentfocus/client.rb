@@ -143,10 +143,7 @@ module Nesta
             update_channel[channel_name].bind('config-changed') do |json|
               data = Yajl::Parser.parse json
               Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Streaming config update received with data: #{data.inspect}"
-              Thread.new do
-                sleep(rand(0.0 ... 3.0))
-                bounce_server!
-              end
+              bounce_server!
             end
             update_channel.connect(true)
           end
