@@ -187,7 +187,7 @@ module Nesta
         end
 
         def self.local_path(file)
-          File.expand_path(Nesta::Config.content_path(file))
+          File.expand_path(Nesta::Config.content_path("pages/"+file))
         end
 
         def self.within_content_path?(file)
