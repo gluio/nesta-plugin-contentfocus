@@ -207,7 +207,7 @@ module Nesta
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Cached '#{local_filename}'."
             Nesta::FileModel.purge_cache
             Nesta::Page.find_all
-            bounce_server! if bounce_server
+            bounce_server! #if bounce_server
           else
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not cache '#{filename}', resolved path outside allowed directory."
           end
@@ -250,7 +250,7 @@ module Nesta
             end
             Nesta::FileModel.purge_cache
             Nesta::Page.find_all
-            bounce_server! if bounce_server
+            bounce_server! #if bounce_server
           else
             Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Did not delete '#{filename}', resolved path outside allowed directory."
           end
