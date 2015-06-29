@@ -259,7 +259,9 @@ module Nesta
         def self.bootstrap!
           Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Bootstrapping local instance..."
           subscribe_to_updates if installed?
-          unless contentfocus_synced?
+          if contentfocus_synced?
+            Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Already synced..."
+          else
             Thread.new do
               cache_files
             end
