@@ -26,7 +26,7 @@ module Nesta
               uri.host,
               uri.port,
               uri.registry,
-              [uri.path, path].compact.join("/"),
+              [uri.path, path].compact.join("/").gsub(%r{/{2,}},"/"),
               uri.opaque,
               [uri.query, query].compact.join("&"),
               nil).to_s
