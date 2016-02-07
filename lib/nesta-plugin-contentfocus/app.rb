@@ -11,6 +11,9 @@ module Nesta
 
     before do
       check_contentfocus
+      if session[:person_id]
+        cookies[:person_id] = session[:person_id]
+      end
     end
 
     not_found do
