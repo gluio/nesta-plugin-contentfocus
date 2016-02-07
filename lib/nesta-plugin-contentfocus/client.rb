@@ -217,7 +217,7 @@ module Nesta
           return unless uncached_files.size > 0
           @syncing = true
           threads = []
-          5.times do
+          8.times do
             threads << Thread.new do
              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Creating worker thread to cache files..."
               file = nil
@@ -232,6 +232,7 @@ module Nesta
           end
           threads.each(&:join)
           @syncing = false
+          Nesta::Menu.full_menu
           bounce_server!
         end
 
