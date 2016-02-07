@@ -13,6 +13,8 @@ module Nesta
 
     before do
       check_contentfocus
+      STDOUT.puts session[:person_id]
+      STDOUT.puts session.inspect
       if session[:person_id]
         response.set_cookie('person_id',
           value: session[:person_id],
