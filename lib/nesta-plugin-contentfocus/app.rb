@@ -1,4 +1,5 @@
 require "redcarpet"
+require "sinatra/cookies"
 require "nesta-plugin-contentfocus/client"
 require "nesta-plugin-contentfocus/helpers"
 require "nesta-plugin-contentfocus/middleware"
@@ -7,6 +8,7 @@ module Nesta
   class App < Sinatra::Base
     include Nesta::Plugin::ContentFocus::Routes
     helpers Nesta::Plugin::ContentFocus::Helpers
+    helpers Sinatra::Cookies
     use Nesta::Plugin::ContentFocus::Middleware
 
     before do
