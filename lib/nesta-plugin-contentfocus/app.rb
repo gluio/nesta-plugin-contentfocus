@@ -14,7 +14,10 @@ module Nesta
     before do
       check_contentfocus
       if session[:person_id]
-        cookies[:person_id] = session[:person_id]
+        response.set_cookie('person_id',
+          value: session[:person_id],
+          domain: ENV['BASE_DOMAIN'],
+          path: '/')
       end
     end
 
