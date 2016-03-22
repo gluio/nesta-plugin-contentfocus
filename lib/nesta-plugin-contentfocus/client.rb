@@ -217,7 +217,9 @@ module Nesta
           return unless uncached_files.size > 0
           @syncing = true
           threads = []
-          8.times do
+          thread_count = 10
+          thread_count = ENV['CONTENTFOCUS_WORKER_COUNT'].to_i if ENV['CONTENTFOCUS_WORKER_COUNT']
+          thread_count.times do
             threads << Thread.new do
              Nesta::Plugin::ContentFocus.logger.debug "CONTENTFOCUS: Creating worker thread to cache files..."
               file = nil
