@@ -217,7 +217,7 @@ module Nesta
           return unless uncached_files.size > 0
           @syncing = true
           threads = []
-          thread_count = 10
+          thread_count = [uncached_files.size, 200].min
           thread_count = ENV['CONTENTFOCUS_WORKER_COUNT'].to_i if ENV['CONTENTFOCUS_WORKER_COUNT']
           thread_count.times do
             threads << Thread.new do
